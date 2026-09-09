@@ -1,0 +1,2369 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Math Builder</title>
+
+<style>
+
+/* =========================
+   기본 설정
+========================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, "Noto Sans KR", sans-serif;
+    background:
+        linear-gradient(180deg, #0d1b2a 0%, #1b4965 100%);
+    color: white;
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+}
+
+
+/* =========================
+   게임 컨테이너
+========================= */
+
+.game {
+    width: 100%;
+    max-width: 460px;
+    min-height: 720px;
+
+    background: rgba(10, 25, 45, 0.95);
+
+    border: 2px solid #2d89c9;
+
+    border-radius: 25px;
+
+    padding: 20px;
+
+    box-shadow:
+        0 0 40px rgba(0, 180, 255, 0.3);
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+.hidden {
+    display: none !important;
+}
+
+
+/* =========================
+   화면 애니메이션
+========================= */
+
+.screen {
+    animation: screenShow 0.4s ease;
+}
+
+@keyframes screenShow {
+
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+/* =========================
+   시작 화면
+========================= */
+
+.start-screen {
+    text-align: center;
+    padding-top: 45px;
+}
+
+.logo-icon {
+    font-size: 70px;
+}
+
+.start-screen h1 {
+    font-size: 45px;
+    margin: 10px 0;
+    color: #ffd54a;
+    text-shadow: 0 4px 0 #a66b00;
+}
+
+.start-screen p {
+    color: #b8d8ee;
+    margin-bottom: 35px;
+}
+
+
+/* =========================
+   난이도
+========================= */
+
+.difficulty-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.difficulty-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+
+.difficulty-btn {
+
+    border: none;
+
+    padding: 18px;
+
+    border-radius: 16px;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    color: white;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+
+    box-shadow: 0 5px 0 rgba(0,0,0,0.3);
+
+}
+
+.difficulty-btn:hover {
+    transform: translateY(-3px);
+}
+
+.difficulty-btn:active {
+    transform: translateY(2px);
+}
+
+.easy {
+    background: linear-gradient(135deg, #21c76b, #0b8f47);
+}
+
+.normal {
+    background: linear-gradient(135deg, #ffca28, #e88c00);
+}
+
+.hard {
+    background: linear-gradient(135deg, #ff5b5b, #bd1e1e);
+}
+
+
+/* =========================
+   게임 상단
+========================= */
+
+.top-info {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr 1fr;
+
+    gap: 8px;
+
+    margin-bottom: 15px;
+
+}
+
+.info-box {
+
+    background: #12314d;
+
+    border: 1px solid #2d6f9f;
+
+    border-radius: 12px;
+
+    padding: 10px 5px;
+
+    text-align: center;
+
+}
+
+.info-label {
+
+    font-size: 12px;
+
+    color: #a7c8e3;
+
+}
+
+.info-value {
+
+    font-size: 21px;
+
+    font-weight: bold;
+
+    margin-top: 4px;
+
+}
+
+#time {
+    color: #66e5ff;
+}
+
+#score {
+    color: #ffd54a;
+}
+
+#combo {
+    color: #ff7aa2;
+}
+
+
+/* =========================
+   타이머 바
+========================= */
+
+.timer-bar {
+
+    height: 10px;
+
+    background: #10202e;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    margin-bottom: 15px;
+
+}
+
+.timer-progress {
+
+    height: 100%;
+
+    width: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            #00d9ff,
+            #1e90ff
+        );
+
+    transition: width 1s linear;
+
+}
+
+
+/* =========================
+   정확도
+========================= */
+
+.accuracy-box {
+
+    text-align: center;
+
+    margin-bottom: 10px;
+
+    font-size: 17px;
+
+}
+
+.accuracy-value {
+
+    font-size: 21px;
+
+    font-weight: bold;
+
+    margin-left: 5px;
+
+}
+
+.accuracy-good {
+    color: #32aaff;
+}
+
+.accuracy-bad {
+    color: #ff4545;
+}
+
+
+/* =========================
+   칭찬 캐릭터 영역
+========================= */
+
+.character-area {
+
+    height: 105px;
+
+    position: relative;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+}
+
+.builder-character {
+
+    font-size: 75px;
+
+    transition: 0.3s;
+
+}
+
+.character-happy {
+
+    animation: jumpHappy 0.5s ease infinite alternate;
+
+}
+
+@keyframes jumpHappy {
+
+    from {
+        transform: translateY(0) rotate(-5deg);
+    }
+
+    to {
+        transform: translateY(-12px) rotate(5deg);
+    }
+
+}
+
+.character-angry {
+
+    animation: shakeAngry 0.4s ease;
+
+}
+
+@keyframes shakeAngry {
+
+    0% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-12px);
+    }
+
+    50% {
+        transform: translateX(12px);
+    }
+
+    75% {
+        transform: translateX(-12px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+
+}
+
+
+/* =========================
+   칭찬 메시지
+========================= */
+
+.praise-message {
+
+    position: absolute;
+
+    top: 0;
+
+    background: #ffd54a;
+
+    color: #182433;
+
+    padding: 10px 18px;
+
+    border-radius: 20px;
+
+    font-weight: bold;
+
+    opacity: 0;
+
+    transform: scale(0.5);
+
+    transition: 0.3s;
+
+    z-index: 10;
+
+}
+
+.praise-message.show {
+
+    opacity: 1;
+
+    transform: scale(1);
+
+    animation: praisePop 0.6s ease;
+
+}
+
+@keyframes praisePop {
+
+    0% {
+        transform: scale(0.3);
+    }
+
+    70% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+
+}
+
+
+/* =========================
+   문제
+========================= */
+
+.question {
+
+    background: #172d40;
+
+    border: 3px solid #815d3d;
+
+    border-radius: 15px;
+
+    padding: 20px;
+
+    text-align: center;
+
+    font-size: 40px;
+
+    font-weight: bold;
+
+    margin: 10px 0 15px;
+
+}
+
+
+/* =========================
+   선택지
+========================= */
+
+.choices {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+
+}
+
+.choice-btn {
+
+    padding: 17px;
+
+    border: 2px solid #3278a6;
+
+    border-radius: 14px;
+
+    background: #17405e;
+
+    color: white;
+
+    font-size: 21px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+
+}
+
+.choice-btn:hover {
+
+    background: #24618a;
+
+    transform: translateY(-2px);
+
+}
+
+.choice-btn:disabled {
+    cursor: default;
+}
+
+.correct-answer {
+    background: #1dbb6b !important;
+    border-color: #5dffad !important;
+}
+
+.wrong-answer {
+    background: #d53b45 !important;
+    border-color: #ff838b !important;
+}
+
+
+/* =========================
+   피드백
+========================= */
+
+.feedback {
+
+    text-align: center;
+
+    min-height: 35px;
+
+    margin-top: 12px;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+}
+
+.feedback.correct {
+    color: #52e58d;
+}
+
+.feedback.wrong {
+    color: #ff6666;
+}
+
+
+/* =========================
+   집 건설 영역
+========================= */
+
+.build-area {
+
+    margin-top: 15px;
+
+    background:
+        linear-gradient(
+            #7ec8f5 0%,
+            #bfe9ff 55%,
+            #66b75f 55%,
+            #4d9749 100%
+        );
+
+    height: 210px;
+
+    border-radius: 18px;
+
+    position: relative;
+
+    overflow: hidden;
+
+    border: 2px solid #458c58;
+
+}
+
+
+/* =========================
+   집 기본 구조
+========================= */
+
+.house {
+
+    position: absolute;
+
+    width: 210px;
+
+    height: 150px;
+
+    bottom: 10px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+}
+
+
+/* 벽 */
+
+.house-wall {
+
+    position: absolute;
+
+    bottom: 0;
+
+    left: 25px;
+
+    width: 160px;
+
+    height: 100px;
+
+    background: #d9a66d;
+
+    border: 4px solid #754a28;
+
+    opacity: 0;
+
+    transition: 0.4s;
+
+}
+
+
+/* 벽돌 */
+
+.bricks {
+
+    position: absolute;
+
+    bottom: 0;
+
+    left: 25px;
+
+    width: 160px;
+
+    height: 35px;
+
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 3px;
+
+    opacity: 0;
+
+    transition: 0.4s;
+
+}
+
+.brick {
+
+    background: #c65a3a;
+
+    border: 2px solid #8e3925;
+
+    border-radius: 3px;
+
+}
+
+
+/* 창문 */
+
+.window {
+
+    position: absolute;
+
+    width: 38px;
+
+    height: 42px;
+
+    background: #78cfff;
+
+    border: 5px solid #704426;
+
+    top: 35px;
+
+    opacity: 0;
+
+    transition: 0.4s;
+
+}
+
+.window.left {
+    left: 40px;
+}
+
+.window.right {
+    right: 40px;
+}
+
+.window::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 4px;
+
+    height: 100%;
+
+    background: white;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+}
+
+.window::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 100%;
+
+    height: 4px;
+
+    background: white;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+}
+
+
+/* 문 */
+
+.door {
+
+    position: absolute;
+
+    width: 42px;
+
+    height: 68px;
+
+    background: #8d5524;
+
+    border: 4px solid #593113;
+
+    bottom: 0;
+
+    left: 84px;
+
+    border-radius: 5px 5px 0 0;
+
+    opacity: 0;
+
+    transition: 0.4s;
+
+}
+
+.door::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 7px;
+
+    height: 7px;
+
+    background: #ffd54a;
+
+    border-radius: 50%;
+
+    right: 5px;
+
+    top: 34px;
+
+}
+
+
+/* 지붕 */
+
+.roof {
+
+    position: absolute;
+
+    width: 0;
+
+    height: 0;
+
+    border-left: 105px solid transparent;
+
+    border-right: 105px solid transparent;
+
+    border-bottom: 80px solid #b94135;
+
+    top: -48px;
+
+    left: 0;
+
+    opacity: 0;
+
+    transition: 0.4s;
+
+}
+
+
+/* 굴뚝 */
+
+.chimney {
+
+    position: absolute;
+
+    width: 30px;
+
+    height: 65px;
+
+    background: #a94e35;
+
+    border: 4px solid #71301f;
+
+    right: 30px;
+
+    top: -15px;
+
+    opacity: 0;
+
+    transition: 0.4s;
+
+}
+
+
+/* 신발 */
+
+.shoes {
+
+    position: absolute;
+
+    bottom: -5px;
+
+    left: 74px;
+
+    font-size: 32px;
+
+    opacity: 0;
+
+    transition: 0.4s;
+
+}
+
+
+/* =========================
+   건설 단계 활성화
+========================= */
+
+.build-show {
+
+    opacity: 1 !important;
+
+    animation: buildPop 0.5s ease;
+
+}
+
+@keyframes buildPop {
+
+    0% {
+
+        transform: scale(0.3);
+
+    }
+
+    70% {
+
+        transform: scale(1.15);
+
+    }
+
+    100% {
+
+        transform: scale(1);
+
+    }
+
+}
+
+
+/* =========================
+   건설 진행도
+========================= */
+
+.build-progress {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 5px;
+
+    margin-top: 12px;
+
+}
+
+.build-step {
+
+    flex: 1;
+
+    text-align: center;
+
+    background: #132d40;
+
+    border-radius: 10px;
+
+    padding: 7px 3px;
+
+    font-size: 12px;
+
+    color: #7d9caf;
+
+}
+
+.build-step.active {
+
+    background: #1f7db1;
+
+    color: white;
+
+}
+
+
+/* =========================
+   게임 종료
+========================= */
+
+.end-screen {
+
+    text-align: center;
+
+    padding-top: 70px;
+
+}
+
+.end-screen h1 {
+
+    color: #ffd54a;
+
+    font-size: 40px;
+
+}
+
+.final-score {
+
+    font-size: 55px;
+
+    color: #ffd54a;
+
+    margin: 15px;
+
+}
+
+.final-house {
+
+    font-size: 100px;
+
+    margin: 20px;
+
+}
+
+.restart-btn {
+
+    border: none;
+
+    background: #2b9ce0;
+
+    color: white;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    padding: 16px 40px;
+
+    border-radius: 15px;
+
+    cursor: pointer;
+
+}
+
+
+/* 모바일 */
+
+@media(max-width: 400px) {
+
+    .game {
+        padding: 14px;
+    }
+
+    .question {
+        font-size: 32px;
+    }
+
+    .build-area {
+        height: 190px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="game">
+
+<!-- =====================
+     시작 화면
+===================== -->
+
+<div
+class="start-screen screen"
+id="startScreen">
+
+<div class="logo-icon">
+🏠🧱
+</div>
+
+<h1>
+Math Builder
+</h1>
+
+<p>
+문제를 맞혀 나만의 집을 완성하세요!
+</p>
+
+<div class="difficulty-title">
+
+난이도 선택
+
+</div>
+
+<div class="difficulty-buttons">
+
+<button
+class="difficulty-btn easy"
+onclick="startGame('easy')">
+
+🟢 쉬움 <br> <small>한 자리 수 계산</small>
+
+</button>
+
+<button
+class="difficulty-btn normal"
+onclick="startGame('normal')">
+
+🟡 보통 <br> <small>두 자리 수 계산</small>
+
+</button>
+
+<button
+class="difficulty-btn hard"
+onclick="startGame('hard')">
+
+🔴 어려움 <br> <small>큰 수와 곱셈 계산</small>
+
+</button>
+
+</div>
+
+</div>
+
+<!-- =====================
+     게임 화면
+===================== -->
+
+<div
+class="play-screen screen hidden"
+id="playScreen">
+
+<!-- 상단 정보 -->
+
+<div class="top-info">
+
+<div class="info-box">
+
+<div class="info-label">
+남은 시간
+</div>
+
+<div
+class="info-value"
+id="time">
+
+30
+
+</div>
+
+</div>
+
+<div class="info-box">
+
+<div class="info-label">
+점수
+</div>
+
+<div
+class="info-value"
+id="score">
+
+0
+
+</div>
+
+</div>
+
+<div class="info-box">
+
+<div class="info-label">
+콤보
+</div>
+
+<div
+class="info-value"
+id="combo">
+
+0
+
+</div>
+
+</div>
+
+</div>
+
+<!-- 타이머 -->
+
+<div class="timer-bar">
+
+<div
+class="timer-progress"
+id="timerProgress">
+
+</div>
+
+</div>
+
+<!-- 정확도 -->
+
+<div class="accuracy-box">
+
+정확도:
+
+<span
+class="accuracy-value accuracy-good"
+id="accuracy">
+
+100%
+
+</span>
+
+</div>
+
+<!-- 캐릭터 -->
+
+<div class="character-area">
+
+<div
+class="praise-message"
+id="praiseMessage">
+
+🔥 대단해! 계속 가자!
+
+</div>
+
+<div
+class="builder-character"
+id="character">
+
+👷
+
+</div>
+
+</div>
+
+<!-- 문제 -->
+
+<div
+class="question"
+id="question">
+
+5 + 3
+
+</div>
+
+<!-- 선택지 -->
+
+<div
+class="choices"
+id="choices">
+
+</div>
+
+<!-- 피드백 -->
+
+<div
+class="feedback"
+id="feedback">
+
+</div>
+
+<!-- 집 건설 -->
+
+<div class="build-area">
+
+<div class="house">
+
+<!-- 지붕 -->
+
+<div
+class="roof"
+id="roof">
+
+</div>
+
+<!-- 굴뚝 -->
+
+<div
+class="chimney"
+id="chimney">
+
+</div>
+
+<!-- 벽 -->
+
+<div
+class="house-wall"
+id="wall">
+
+</div>
+
+<!-- 벽돌 -->
+
+<div
+class="bricks"
+id="bricks">
+
+<div class="brick"></div>
+<div class="brick"></div>
+<div class="brick"></div>
+<div class="brick"></div>
+
+<div class="brick"></div>
+<div class="brick"></div>
+<div class="brick"></div>
+<div class="brick"></div>
+
+</div>
+
+<!-- 창문 -->
+
+<div
+class="window left"
+id="windowLeft">
+
+</div>
+
+<div
+class="window right"
+id="windowRight">
+
+</div>
+
+<!-- 문 -->
+
+<div
+class="door"
+id="door">
+
+</div>
+
+<!-- 신발 -->
+
+<div
+class="shoes"
+id="shoes">
+
+👟👟
+
+</div>
+
+</div>
+
+</div>
+
+<!-- 진행 단계 -->
+
+<div class="build-progress">
+
+<div
+class="build-step"
+id="step1">
+
+🧱 벽돌
+
+</div>
+
+<div
+class="build-step"
+id="step2">
+
+🪟 창문
+
+</div>
+
+<div
+class="build-step"
+id="step3">
+
+🚪 문
+
+</div>
+
+<div
+class="build-step"
+id="step4">
+
+🏠 지붕
+
+</div>
+
+<div
+class="build-step"
+id="step5">
+
+🧱 굴뚝
+
+</div>
+
+<div
+class="build-step"
+id="step6">
+
+👟 장식
+
+</div>
+
+</div>
+
+</div>
+
+<!-- =====================
+     종료 화면
+===================== -->
+
+<div
+class="end-screen screen hidden"
+id="endScreen">
+
+<h1>
+게임 종료!
+</h1>
+
+<div class="final-house">
+🏠
+</div>
+
+<p>
+최종 점수
+</p>
+
+<div
+class="final-score"
+id="finalScore">
+
+0
+
+</div>
+
+<p>
+최종 정확도:
+
+<span id="finalAccuracy">
+
+0%
+
+</span>
+
+</p>
+
+<button
+class="restart-btn"
+onclick="restartGame()">
+
+다시 건설하기
+
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+
+/* =========================
+   게임 변수
+========================= */
+
+let score = 0;
+
+let time = 30;
+
+let combo = 0;
+
+let correctAnswer = 0;
+
+let difficulty = "easy";
+
+let timer;
+
+let gameRunning = false;
+
+let answering = false;
+
+let totalQuestions = 0;
+
+let correctQuestions = 0;
+
+let buildLevel = 0;
+
+
+/* =========================
+   게임 시작
+========================= */
+
+function startGame(selectedDifficulty) {
+
+
+difficulty = selectedDifficulty;
+
+
+score = 0;
+
+time = 30;
+
+combo = 0;
+
+totalQuestions = 0;
+
+correctQuestions = 0;
+
+buildLevel = 0;
+
+
+gameRunning = true;
+
+
+resetHouse();
+
+
+document
+.getElementById("startScreen")
+.classList
+.add("hidden");
+
+
+document
+.getElementById("playScreen")
+.classList
+.remove("hidden");
+
+
+updateUI();
+
+
+nextQuestion();
+
+
+timer = setInterval(() => {
+
+
+time--;
+
+
+updateTimer();
+
+
+if(time <= 0){
+
+endGame();
+
+}
+
+
+},1000);
+
+
+}
+
+
+/* =========================
+   난이도별 문제 생성
+========================= */
+
+function nextQuestion() {
+
+
+if(!gameRunning){
+
+return;
+
+}
+
+
+answering = false;
+
+
+let a;
+
+let b;
+
+let operations;
+
+
+if(difficulty === "easy"){
+
+
+a = randomNumber(1,9);
+
+b = randomNumber(1,9);
+
+operations = ["+","-"];
+
+
+}
+
+
+else if(difficulty === "normal"){
+
+
+a = randomNumber(10,50);
+
+b = randomNumber(5,30);
+
+operations = ["+","-","×"];
+
+
+}
+
+
+else{
+
+
+a = randomNumber(20,100);
+
+b = randomNumber(10,50);
+
+operations = ["+","-","×"];
+
+
+}
+
+
+let op =
+
+operations[
+Math.floor(
+Math.random() * operations.length
+)
+];
+
+
+
+/* 뺄셈 음수 방지 */
+
+if(op === "-" && a < b){
+
+
+[a,b] = [b,a];
+
+
+}
+
+
+
+/* 정답 계산 */
+
+if(op === "+"){
+
+correctAnswer = a + b;
+
+}
+
+else if(op === "-"){
+
+correctAnswer = a - b;
+
+}
+
+else{
+
+correctAnswer = a * b;
+
+}
+
+
+
+/* 문제 출력 */
+
+document
+.getElementById("question")
+.textContent =
+
+`${a} ${op} ${b}`;
+
+
+
+createChoices();
+
+
+}
+
+
+/* 랜덤 숫자 */
+
+function randomNumber(min,max){
+
+return Math.floor(
+Math.random() * (max-min+1)
+) + min;
+
+}
+
+
+/* =========================
+   선택지 생성
+========================= */
+
+function createChoices(){
+
+
+let answers = [correctAnswer];
+
+
+while(answers.length < 4){
+
+
+let range =
+
+Math.max(
+5,
+Math.floor(Math.abs(correctAnswer) * 0.3)
+);
+
+
+let wrong =
+
+correctAnswer +
+
+randomNumber(-range,range);
+
+
+
+if(
+
+wrong >= 0 &&
+
+wrong !== correctAnswer &&
+
+!answers.includes(wrong)
+
+){
+
+answers.push(wrong);
+
+}
+
+
+}
+
+
+answers.sort(
+() => Math.random()-0.5
+);
+
+
+const choicesDiv =
+
+document
+.getElementById("choices");
+
+
+choicesDiv.innerHTML = "";
+
+
+answers.forEach(ans => {
+
+
+const button =
+
+document.createElement("button");
+
+
+button.className = "choice-btn";
+
+
+button.textContent = ans;
+
+
+button.onclick = () => {
+
+checkAnswer(button,ans);
+
+};
+
+
+choicesDiv.appendChild(button);
+
+
+});
+
+
+}
+
+
+/* =========================
+   답 확인
+========================= */
+
+function checkAnswer(button,answer){
+
+
+if(answering || !gameRunning){
+
+return;
+
+}
+
+
+answering = true;
+
+
+totalQuestions++;
+
+
+const buttons =
+
+document
+.querySelectorAll(".choice-btn");
+
+
+buttons.forEach(btn => {
+
+btn.disabled = true;
+
+});
+
+
+const character =
+
+document
+.getElementById("character");
+
+
+const feedback =
+
+document
+.getElementById("feedback");
+
+
+/* =====================
+   정답
+===================== */
+
+if(answer === correctAnswer){
+
+
+correctQuestions++;
+
+
+combo++;
+
+
+/* 점수 */
+
+score += 10 + (combo * 2);
+
+
+/* 정답 버튼 */
+
+button
+.classList
+.add("correct-answer");
+
+
+/* 캐릭터 */
+
+character.textContent = "👷😊";
+
+
+character
+.classList
+.add("character-happy");
+
+
+feedback.textContent =
+
+"🎉 정답! 집을 건설합니다!";
+
+
+feedback.className =
+
+"feedback correct";
+
+
+/* 집 건설 */
+
+buildHousePart();
+
+
+/* 콤보 3 이상 칭찬 */
+
+if(combo >= 3){
+
+showPraise();
+
+}
+
+
+}
+
+
+/* =====================
+   오답
+===================== */
+
+else{
+
+
+combo = 0;
+
+
+/* 버튼 */
+
+button
+.classList
+.add("wrong-answer");
+
+
+/* 캐릭터 */
+
+character.textContent = "👷😡";
+
+
+character
+.classList
+.add("character-angry");
+
+
+feedback.textContent =
+
+"💢 틀렸어! 다시 집중해서 건설하자!";
+
+
+feedback.className =
+
+"feedback wrong";
+
+
+/* 정답 표시 */
+
+buttons.forEach(btn => {
+
+
+if(Number(btn.textContent) === correctAnswer){
+
+
+btn
+.classList
+.add("correct-answer");
+
+
+}
+
+
+});
+
+
+}
+
+
+updateUI();
+
+
+setTimeout(() => {
+
+
+character.textContent = "👷";
+
+
+character
+.classList
+.remove("character-happy");
+
+
+character
+.classList
+.remove("character-angry");
+
+
+feedback.textContent = "";
+
+
+if(gameRunning){
+
+nextQuestion();
+
+}
+
+
+},800);
+
+
+}
+
+
+/* =========================
+   집 건설
+========================= */
+
+function buildHousePart(){
+
+
+const parts = [
+
+"bricks",
+"windowLeft",
+"door",
+"roof",
+"chimney",
+"shoes"
+
+];
+
+
+/* 벽돌 전에 벽 표시 */
+
+if(buildLevel === 0){
+
+document
+.getElementById("wall")
+.classList
+.add("build-show");
+
+}
+
+
+/* 현재 건설 파츠 */
+
+if(buildLevel < parts.length){
+
+
+const part =
+
+document
+.getElementById(parts[buildLevel]);
+
+
+part
+.classList
+.add("build-show");
+
+
+/* 창문은 양쪽 동시에 */
+
+if(buildLevel === 1){
+
+document
+.getElementById("windowRight")
+.classList
+.add("build-show");
+
+}
+
+
+/* 진행 표시 */
+
+const step =
+
+document
+.getElementById(
+"step" + (buildLevel + 1)
+);
+
+
+step
+.classList
+.add("active");
+
+
+buildLevel++;
+
+
+}
+
+
+/* 모든 집 완성 후 반복 */
+
+else{
+
+
+celebrateHouse();
+
+
+buildLevel = 0;
+
+
+resetHouse();
+
+
+}
+
+
+}
+
+
+/* =========================
+   집 완성 축하
+========================= */
+
+function celebrateHouse(){
+
+
+const feedback =
+
+document
+.getElementById("feedback");
+
+
+feedback.textContent =
+
+"🏠✨ 집 완성! 정말 대단해!";
+
+
+feedback.className =
+
+"feedback correct";
+
+
+}
+
+
+/* =========================
+   콤보 칭찬
+========================= */
+
+function showPraise(){
+
+
+const praise =
+
+document
+.getElementById("praiseMessage");
+
+
+const character =
+
+document
+.getElementById("character");
+
+
+let messages = [
+
+"🔥 대단해! 계속 가자!",
+
+"⭐ 3콤보 달성! 최고야!",
+
+"🏆 엄청난 실력이야!",
+
+"🎉 완벽해! 건설 마스터!"
+
+];
+
+
+praise.textContent =
+
+messages[
+Math.floor(
+Math.random()*messages.length
+)
+];
+
+
+praise
+.classList
+.add("show");
+
+
+character.textContent = "👷🎉";
+
+
+setTimeout(() => {
+
+
+praise
+.classList
+.remove("show");
+
+
+},1000);
+
+
+}
+
+
+/* =========================
+   정확도
+========================= */
+
+function updateAccuracy(){
+
+
+let accuracy = 100;
+
+
+if(totalQuestions > 0){
+
+
+accuracy =
+
+Math.round(
+
+(correctQuestions / totalQuestions) * 100
+
+);
+
+
+}
+
+
+const accuracyElement =
+
+document
+.getElementById("accuracy");
+
+
+accuracyElement.textContent =
+
+accuracy + "%";
+
+
+if(accuracy < 50){
+
+
+accuracyElement.className =
+
+"accuracy-value accuracy-bad";
+
+
+}
+
+else{
+
+
+accuracyElement.className =
+
+"accuracy-value accuracy-good";
+
+
+}
+
+
+}
+
+
+/* =========================
+   UI 업데이트
+========================= */
+
+function updateUI(){
+
+
+document
+.getElementById("score")
+.textContent = score;
+
+
+document
+.getElementById("combo")
+.textContent = combo;
+
+
+updateAccuracy();
+
+
+updateTimer();
+
+
+}
+
+
+/* =========================
+   타이머
+========================= */
+
+function updateTimer(){
+
+
+document
+.getElementById("time")
+.textContent = time;
+
+
+const percentage =
+
+(time / 30) * 100;
+
+
+document
+.getElementById("timerProgress")
+.style.width =
+
+percentage + "%";
+
+
+}
+
+
+/* =========================
+   집 초기화
+========================= */
+
+function resetHouse(){
+
+
+const parts = [
+
+"wall",
+"bricks",
+"windowLeft",
+"windowRight",
+"door",
+"roof",
+"chimney",
+"shoes"
+
+];
+
+
+parts.forEach(id => {
+
+
+document
+.getElementById(id)
+.classList
+.remove("build-show");
+
+
+});
+
+
+for(let i = 1; i <= 6; i++){
+
+
+document
+.getElementById("step"+i)
+.classList
+.remove("active");
+
+
+}
+
+
+}
+
+
+/* =========================
+   게임 종료
+========================= */
+
+function endGame(){
+
+
+gameRunning = false;
+
+
+clearInterval(timer);
+
+
+document
+.getElementById("playScreen")
+.classList
+.add("hidden");
+
+
+document
+.getElementById("endScreen")
+.classList
+.remove("hidden");
+
+
+document
+.getElementById("finalScore")
+.textContent = score;
+
+
+/* 최종 정확도 */
+
+let finalAccuracy = 0;
+
+
+if(totalQuestions > 0){
+
+
+finalAccuracy =
+
+Math.round(
+
+(correctQuestions / totalQuestions) * 100
+
+);
+
+
+}
+
+
+const finalAccuracyElement =
+
+document
+.getElementById("finalAccuracy");
+
+
+finalAccuracyElement.textContent =
+
+finalAccuracy + "%";
+
+
+if(finalAccuracy < 50){
+
+finalAccuracyElement.style.color = "#ff4545";
+
+}
+
+else{
+
+finalAccuracyElement.style.color = "#32aaff";
+
+}
+
+
+}
+
+
+/* =========================
+   다시하기
+========================= */
+
+function restartGame(){
+
+
+document
+.getElementById("endScreen")
+.classList
+.add("hidden");
+
+
+document
+.getElementById("startScreen")
+.classList
+.remove("hidden");
+
+
+}
+
+
+</script>
+
+</body>
+</html>
